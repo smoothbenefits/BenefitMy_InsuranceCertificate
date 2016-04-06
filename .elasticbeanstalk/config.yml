@@ -1,0 +1,16 @@
+branch-defaults:
+  master:
+    environment: insurancecert-prd
+  development:
+    environment: insurancecert-dev
+  release-0.1.0:
+    environment: insurancecert-stg
+global:
+  application_name: InsuranceCertificateService
+  default_ec2_keyname: null
+  default_platform: 64bit Amazon Linux 2015.09 v2.0.6 running Node.js
+  default_region: us-west-2
+  profile: eb-cli
+  sc: git
+deploy:
+  artifact: ./buildartifact.zip
