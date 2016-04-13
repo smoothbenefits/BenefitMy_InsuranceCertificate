@@ -8,7 +8,7 @@ module.exports = function(app) {
       var id = req.params.id;
       Contractor.findById(id, function(err, contractor) {
         if (err) {
-          res.send(err);
+          res.status(404).send(err);
         }
 
         res.setHeader('Cache-Control', 'no-cache');
@@ -24,7 +24,7 @@ module.exports = function(app) {
       .find({ companyDescriptor: token })
       .exec(function(err, contractors) {
         if (err){
-          res.status(400).send(err);
+          res.status(404).send(err);
         }
 
         res.setHeader('Cache-Control', 'no-cache');
@@ -38,7 +38,7 @@ module.exports = function(app) {
 
       Contractor.create(req.body, function(err, createdContractor) {
         if (err) {
-            res.send(err);
+            res.status(400).send(err);
         }
 
         res.json(createdContractor);
@@ -50,18 +50,23 @@ module.exports = function(app) {
     app.post('/api/v1/contractor/:id/insurance', function(req, res) {
 
       var id = req.params.id;
-      var insurnace = req.body.insurance;
+      var insurance = req.body;
 
-      Contractor.findById(id), function(err, contractor) {
+      Contractor.findById(id, function(err, contractor) {
         if (err) {
-          return res.status(400).send(err);
+          return res.status(404).send(err);
         }
 
-        contractor.insurance.push(insurance);
+        contractor.insurances.push(insurance);
+        contractor.save(function(err) {
+          if (err) {
+            return res.status(400).send(err);
+          }
 
-        res.setHeader('Cache-Control', 'no-cache');
-        res.json(contractor);
-      }
+          res.setHeader('Cache-Control', 'no-cache');
+          res.json(contractor);
+        });
+      });
     });
 
     //
@@ -72,16 +77,15 @@ module.exports = function(app) {
 
       Contractor.findById(contractorId, function(err, contractor) {
         if (err) {
-          return res.status(400).send(err);
+          return res.status(404).send(err);
         }
 
-        contractor.insurance.id(insuranceId).remove();
+        contractor.insurances.pull({_id: insuranceId});
         contractor.save(function(err) {
           if (err) {
             return res.status(400).send(err);
           }
-
-          return res.status(204);
+          res.status(204);
         });
       });
     });
@@ -89,6 +93,9 @@ module.exports = function(app) {
     //
     // Update status of an existing contractor, defined by id
     app.put('/api/v1/contractor/:id/status', function(req, res) {
+
+      // request body should be:
+      //     { status: 'ACTIVE' }
       var id = req.params.id;
       var status = req.body.status;
 
@@ -98,7 +105,7 @@ module.exports = function(app) {
         {},
         function(err, contractor) {
           if (err) {
-            res.send(err);
+            res.status(400).send(err);
           }
 
           res.setHeader('Cache-Control', 'no-cache');

@@ -26,7 +26,7 @@ var contractorSchema = new Schema({
   status: { type: String, required: true },
   createdTime: { type: Date, default: Date.now },
   updatedTime: { type: Date },
-  insurance: [
+  insurances: [
     insuranceSchema
   ]
 });
