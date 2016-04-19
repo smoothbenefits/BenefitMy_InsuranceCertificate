@@ -22,7 +22,19 @@ var insuranceSchema = new Schema({
 var contractorSchema = new Schema({
   companyDescriptor: { type: String, required: true},
   name: { type: String, required: true },
-  address: { type: String },
+  contact: {
+    firstName: { type: String },
+    lastName: { type: String },
+    phone: { type: String },
+    email: { type: String }
+  },
+  address: {
+    address1: { type: String },
+    address2: { type: String },
+    city: { type: String },
+    state: { type: String },
+    zip: { type: String }
+  },
   status: { type: String, required: true },
   createdTime: { type: Date, default: Date.now },
   updatedTime: { type: Date },

@@ -8,11 +8,50 @@ module.exports = function(app) {
       var id = req.params.id;
       Contractor.findById(id, function(err, contractor) {
         if (err) {
-          res.status(404).send(err);
+          return res.status(404).send(err);
         }
 
         res.setHeader('Cache-Control', 'no-cache');
-        res.json(contractor);
+        return res.json(contractor);
+      });
+    });
+
+    //
+    // Update contractor by id
+    app.put('/api/v1/contractor/:id', function(req, res) {
+      var id = req.params.id;
+      Contractor.findById(id, function(err, contractor) {
+        // request body should be:
+        //     { name: 'exampleName',
+        //       address: {
+        //         address1: '23 test street',
+        //         address2: '',
+        //         city: 'Boston',
+        //         state: 'MA',
+        //         zip: '02344',
+        //       },
+        //       contact:{
+        //         firstName: 'Jack',
+        //         lastName: 'Johnson',
+        //         email: 'Jack.Johnson@mail.com',
+        //         phone: '0000000000'
+        //       }
+        //     }
+        if (err) {
+          return res.status(404).send(err);
+        }
+        
+        contractor.name = req.body.name;
+        contractor.address = req.body.address;
+        contractor.contact = req.body.contact;
+        contractor.updatedTime = Date.now();
+        contractor.save(function(err) {
+          if (err) {
+            return res.status(400).send(err);
+          }
+          res.setHeader('Cache-Control', 'no-cache');
+          return res.json(contractor);
+        });
       });
     });
 
@@ -24,11 +63,11 @@ module.exports = function(app) {
       .find({ companyDescriptor: token })
       .exec(function(err, contractors) {
         if (err){
-          res.status(404).send(err);
+          return res.status(404).send(err);
         }
 
         res.setHeader('Cache-Control', 'no-cache');
-        res.json(contractors);
+        return res.json(contractors);
       });
     });
 
@@ -38,10 +77,10 @@ module.exports = function(app) {
 
       Contractor.create(req.body, function(err, createdContractor) {
         if (err) {
-            res.status(400).send(err);
+            return res.status(400).send(err);
         }
 
-        res.json(createdContractor);
+        return res.json(createdContractor);
       });
     });
 
@@ -64,7 +103,7 @@ module.exports = function(app) {
           }
 
           res.setHeader('Cache-Control', 'no-cache');
-          res.json(contractor);
+          return res.json(contractor);
         });
       });
     });
@@ -85,7 +124,7 @@ module.exports = function(app) {
           if (err) {
             return res.status(400).send(err);
           }
-          res.status(204);
+          return res.status(204);
         });
       });
     });
@@ -105,11 +144,11 @@ module.exports = function(app) {
         {},
         function(err, contractor) {
           if (err) {
-            res.status(400).send(err);
+            return res.status(400).send(err);
           }
 
           res.setHeader('Cache-Control', 'no-cache');
-          res.json(contractor);
+          return res.json(contractor);
         }
       );
     });
