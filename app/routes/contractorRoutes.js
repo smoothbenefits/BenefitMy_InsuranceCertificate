@@ -95,7 +95,9 @@ module.exports = function(app) {
         if (err) {
           return res.status(404).send(err);
         }
-
+        if(insurance._id){
+          contractor.insurances.pull({_id: insurance._id});
+        }
         contractor.insurances.push(insurance);
         contractor.save(function(err) {
           if (err) {
@@ -124,10 +126,11 @@ module.exports = function(app) {
           if (err) {
             return res.status(400).send(err);
           }
-          return res.status(204);
+          return res.status(204).send();
         });
       });
     });
+
 
     //
     // Update status of an existing contractor, defined by id
