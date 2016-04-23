@@ -30,7 +30,8 @@
     "nodemailer": "~2.1.0",
     "email-templates": "~1.2.1",
     "ejs": "~2.4.1",
-    "moment": "~2.11.2"
+    "moment": "~2.11.2",
+    "underscore": "~1.8.3"
   },
   "browserify": {
     "transform": [["babelify", { "presets": ["es2015", "react"] }]]
