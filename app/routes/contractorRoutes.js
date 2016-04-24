@@ -1,4 +1,6 @@
 var Contractor = require('../models/contractor');
+var InsuranceCertificateValidationService 
+    = require('../services/InsuranceCertificateValidationService');
 
 module.exports = function(app) {
 
@@ -154,5 +156,24 @@ module.exports = function(app) {
           return res.json(contractor);
         }
       );
+    });
+
+    //
+    // Execute global contractor insurance expiration validation
+    app.post('/api/v1/contractors/execute_insurance_validation', function(req, res) {
+        
+        // Get the collection of company info from the post body
+        var companyInfoCollection = req.body;
+
+        // Invoke the validation service to perform everything
+        InsuranceCertificateValidationService.ValidateCoverageExpirationForAllContractors(
+            companyInfoCollection, 
+            function() {
+                res.status(200).send('Insurance expiration validation for all contractors completed!');
+            },
+            function(err) {
+                res.status(500).send(err);
+            }
+        );
     });
 };

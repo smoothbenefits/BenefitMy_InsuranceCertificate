@@ -1,0 +1,35 @@
+<html>
+    <head>
+    </head>
+    <body>
+      <h3>See below for information about insurance certificate(s) expiration.</h3>
+      <br/>
+      <% for(var i = 0; i < contractors.length; i++) {%>
+        <div><b>Contractor: <%= contractors[i].contractorName %></b></div>
+        <table border="1">
+          <thead>
+            <tr>
+              <th><span>Insurance Type</span></th>
+              <th><span>Policy End Date</span></th>
+              <th><span>Days Until Expiration</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for(var j = 0; j < contractors[i].violationInsurances.length; j++) {%>
+                <tr>
+                    <td><%= contractors[i].violationInsurances[j].insuranceType %></td>
+                    <td><%= contractors[i].violationInsurances[j].policyEndDate %></td>
+                    <td><%= contractors[i].violationInsurances[j].daysUntilExpiration > 0 
+                        ? contractors[i].violationInsurances[j].daysUntilExpiration 
+                        : "Expired" %></td>
+                </tr>
+            <% } %>
+          </tbody>
+        </table>
+        <br/>
+      <% } %>
+      
+      <hr/>
+      <a href="<%= mainSiteUrl %>">Visit Site</a>
+    </body>
+</html>
