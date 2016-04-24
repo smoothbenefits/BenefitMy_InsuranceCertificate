@@ -26,6 +26,9 @@ var ValidateCoverageExpirationForAllContractors = function(companyInfoCollection
         .exec(function(err, contractors) {
             if (err) {
                 // TODO: add logging
+                if (errCallBack) {
+                    errCallBack(err);
+                }
                 return;
             }
 
@@ -70,7 +73,7 @@ var ValidateCoverageExpirationForAllContractors = function(companyInfoCollection
 
 var _sendInsuranceExpirationEmailToCompany = function(violationData, companyInfo) {
     EmailService.sendSupportEmailWithTemplate(
-        [companyInfo.email],
+        companyInfo.emailList,
         '[Alert]Insurance Certificate Expiration',
         'insurance_expiration_notification_company',
         violationData
