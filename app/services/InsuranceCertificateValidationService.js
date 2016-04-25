@@ -4,8 +4,6 @@ var Contractor = require('../models/contractor');
 var EmailService = require('./EmailService');
 var CommonUtilityService = require('./CommonUtilityService');
 
-var InsuranceExpirationValidationThresholdInDays = 15;
-
 var ValidateCoverageExpirationForAllContractors = function(companyInfoCollection, successCallBack, errCallBack) {
     // Each company violation data item would look like
     // 
@@ -91,13 +89,11 @@ var _getCoverageExpirationValidationDataForContractor = function(contractorRecor
         var daysUntilExpiration = 
             _computeInsuranceExpirationInDaysFromNow(insurance);
         
-        // For now, we only care if the insurance is to be 
-        // expired in less than the threshold number of days
-        if (daysUntilExpiration <= InsuranceExpirationValidationThresholdInDays) {
+        if (_checkEmailSchedule(daysUntilExpiration)) {
             violationRecord.violationInsurances.push({
                 insuranceType: insurance.type,
                 policyEndDate: CommonUtilityService.getDisplayDate(insurance.policy.endDate),
-                daysUntilExpiration: Math.max(Math.round(daysUntilExpiration), 0)
+                daysUntilExpiration: Math.max(daysUntilExpiration, 0)
             });
         }
     });
@@ -111,7 +107,22 @@ var _computeInsuranceExpirationInDaysFromNow = function(insuranceRecord) {
     var now = moment.utc();
     var expiration = moment.utc(insuranceRecord.policy.endDate);
     var diffNumDays = expiration.diff(now, 'day', true);
-    return diffNumDays;
+    return Math.round(diffNumDays);
+};
+
+var _checkEmailSchedule= function(daysUntilExpiration) {
+    // Only trigger email based on the schedule below
+    //  - Within one week (7-days) prior to expiration and 
+    //    10 days after expiration, send daily
+    //  - Within 30 days prior to expiration up until 7 days
+    //    prior to expiration, send every 7 days
+    if (daysUntilExpiration <= 7 && daysUntilExpiration >= -10) {
+        return true;
+    } else if (daysUntilExpiration <= 30 && daysUntilExpiration > 7) {
+        return daysUntilExpiration % 7 == 0;
+    }
+
+    return false;
 };
 
 module.exports = {
