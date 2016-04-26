@@ -18,7 +18,7 @@ var insuranceSchema = new Schema({
     endDate: { type: Date, required: true },
     coveredAmount: { type: Number, default: 0 }
   },
-  uploads:[uploadModule.Upload],
+  uploads:[uploadModule.UploadSchema],
   createdTime: { type: Date, default: Date.now }
 });
 
