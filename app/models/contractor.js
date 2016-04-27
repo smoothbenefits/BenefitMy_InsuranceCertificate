@@ -1,5 +1,7 @@
 var mongoose = require('mongoose');
+var uploadModule = require('./upload');
 var Schema = mongoose.Schema;
+
 
 var insuranceSchema = new Schema({
   type: { type: String, required: true},
@@ -16,6 +18,7 @@ var insuranceSchema = new Schema({
     endDate: { type: Date, required: true },
     coveredAmount: { type: Number, default: 0 }
   },
+  uploads:[uploadModule.UploadSchema],
   createdTime: { type: Date, default: Date.now }
 });
 
