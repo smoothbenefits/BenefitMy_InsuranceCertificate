@@ -3,7 +3,7 @@ branch-defaults:
     environment: insurancecert-prd
   development:
     environment: insurancecert-dev
-  release-0.1.0:
+  release-0.2.0:
     environment: insurancecert-stg
 global:
   application_name: InsuranceCertificateService

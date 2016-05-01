@@ -1,0 +1,16 @@
+See below for information about insurance certificate(s) expiration.
+
+<% for(var i = 0; i < contractors.length; i++) { %>
+    Contractor: <%= contractors[i].contractorName %>
+    <% for(var j = 0; j < contractors[i].violationInsurances.length; j++) { %>
+        Insurance Type: <%= contractors[i].violationInsurances[j].insuranceType %>
+        Policy End Date: <%= contractors[i].violationInsurances[j].policyEndDate %>
+        Days Until Expiration: <%= contractors[i].violationInsurances[j].daysUntilExpiration > 0 
+            ? contractors[i].violationInsurances[j].daysUntilExpiration 
+            : "Expired" %>
+    <% } %>
+<% } %>
+
+---------------------------------------------------------------------------
+
+Login to Process: <%= mainSiteUrl %>
