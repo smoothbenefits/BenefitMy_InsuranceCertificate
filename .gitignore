@@ -1,6 +1,7 @@
 node_modules
 lib
 *.log
+.DS_Store
 /public/scripts/bundle.js
 /public/scripts/bundle.min.js
 /public/scripts-es6/bundle.js
