@@ -73,7 +73,7 @@ module.exports = function(app) {
     //
     // Add a new Project
     app.post('/api/v1/project', function(req, res) {
-
+      req.body.updatedTime = Date.now();
       Project.create(req.body, function(err, createdProject) {
         if (err) {
             return res.status(400).send(err);

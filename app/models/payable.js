@@ -10,7 +10,7 @@ var PayableSchema = new Schema({
   },
   amount: { type: Number, required: true },
   createdTime: { type: Date, default: Date.now },
-  modifiedTime: { type: Date }
+  updatedTime: { type: Date }
 });
 
 module.exports = mongoose.model('Payable', PayableSchema);
