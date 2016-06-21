@@ -15,7 +15,7 @@ var ProjectSchema = new Schema({
   requiredInsuranceTypes: [
     { type: String }
   ],
-  weeklyPayables: [ PayableSchema ],
+  payables: [ PayableSchema ],
   status: { type: String, required: true },
   createdTime: { type: Date, default: Date.now },
   updatedTime: { type: Date }

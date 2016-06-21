@@ -3,6 +3,7 @@ var Schema = mongoose.Schema;
 
 var PayableSchema = new Schema({
   dateStart: { type: Date, required: true, default: Date.now },
+  dateEnd: { type: Date, required: true },
   Contractor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Contractor'

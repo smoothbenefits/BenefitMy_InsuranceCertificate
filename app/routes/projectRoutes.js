@@ -33,7 +33,7 @@ module.exports = function(app) {
         //       requiredInsuranceTypes: [
         //         'Commercial General Liability',
         //         'Umbrella Liability' ],
-        //       weeklyPayables: [],
+        //       payables: [],
         //     }
         if (err) {
           return res.status(404).send(err);
@@ -42,7 +42,7 @@ module.exports = function(app) {
         project.name = req.body.name;
         project.address = req.body.address;
         project.requiredInsuranceTypes = req.body.requiredInsuranceTypes;
-        project.weeklyPayables = req.body.weeklyPayables,
+        project.payables = req.body.payables,
         project.updatedTime = Date.now();
         project.save(function(err) {
           if (err) {
@@ -95,9 +95,9 @@ module.exports = function(app) {
           return res.status(404).send(err);
         }
         if(payable._id){
-          project.weeklyPayables.pull({_id: payable._id});
+          project.payables.pull({_id: payable._id});
         }
-        project.weeklyPayables.push(payable);
+        project.payables.push(payable);
         project.save(function(err) {
           if (err) {
             return res.status(400).send(err);
@@ -120,7 +120,7 @@ module.exports = function(app) {
           return res.status(404).send(err);
         }
 
-        project.weeklyPayables.pull({_id: payableId});
+        project.payables.pull({_id: payableId});
         project.save(function(err) {
           if (err) {
             return res.status(400).send(err);
