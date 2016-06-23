@@ -42,7 +42,8 @@ module.exports = function(app) {
         project.name = req.body.name;
         project.address = req.body.address;
         project.requiredInsuranceTypes = req.body.requiredInsuranceTypes;
-        project.payables = req.body.payables,
+        project.payables = req.body.payables;
+        project.isCCIP = req.body.isCCIP;
         project.updatedTime = Date.now();
         project.save(function(err) {
           if (err) {

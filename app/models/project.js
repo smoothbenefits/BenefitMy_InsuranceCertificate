@@ -17,6 +17,7 @@ var ProjectSchema = new Schema({
   ],
   payables: [ PayableSchema ],
   status: { type: String, required: true },
+  isCCIP: { type: Boolean, required: true, default: false },
   createdTime: { type: Date, default: Date.now },
   updatedTime: { type: Date }
 });
