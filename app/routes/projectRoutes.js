@@ -24,7 +24,6 @@ module.exports = function(app) {
           if (err) {
             return res.status(400).send(err);
           }
-
           res.setHeader('Cache-Control', 'no-cache');
           return res.json(project);
         });
@@ -116,6 +115,7 @@ module.exports = function(app) {
 
       var id = req.params.id;
       var payable = req.body;
+      payable.updatedTime = Date.now();
 
       _createPayableIfNotExists(id, payable, function(err, projectId, savedPayable) {
         if (err) {
@@ -136,12 +136,11 @@ module.exports = function(app) {
             if (saveProjectErr) {
               return res.status(400).send(saveProjectErr);
             }
-
             res.setHeader('Cache-Control', 'no-cache');
             return res.json(savedProject);
           });
         });
-      })
+      });
 
       // Create payable if it does not exists,
       // then trigger callback function to finish operations
@@ -152,12 +151,13 @@ module.exports = function(app) {
             if (payableErr) {
               callback(payableErr, projectId, savedPayable);
             }
-
-            callback(null, projectId, savedPayable);
+            else {
+              callback(null, projectId, savedPayable);
+            }
           });
+        } else {
+          callback(null, projectId, payable)
         }
-
-        callback(null, projectId, payable);
       };
     });
 
