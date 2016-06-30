@@ -2,6 +2,7 @@ var Project = require('../models/project');
 var Payable = require('../models/payable');
 var Contractor = require('../models/contractor');
 var mongoose = require('mongoose');
+var _ = require("underscore");
 
 module.exports = function(app) {
 
@@ -53,10 +54,19 @@ module.exports = function(app) {
           return res.status(404).send(err);
         }
 
+        // ObjectId expects MongoDb id format
+        var payables = [];
+        _.each(req.body.payables, function(payable) {
+          if (payable.contractor && payable.contractor._id) {
+            payable.contractor = payable.contractor._id;
+            payables.push(payable);
+          }
+        });
+
         project.name = req.body.name;
         project.address = req.body.address;
         project.requiredInsuranceTypes = req.body.requiredInsuranceTypes;
-        project.payables = req.body.payables;
+        project.payables = payables;
         project.isCCIP = req.body.isCCIP;
         project.updatedTime = Date.now();
         project.save(function(err) {
