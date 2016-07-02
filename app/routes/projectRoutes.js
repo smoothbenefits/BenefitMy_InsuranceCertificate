@@ -1,8 +1,11 @@
 var Project = require('../models/project');
-
+var Payable = require('../models/payable');
+var Contractor = require('../models/contractor');
+var mongoose = require('mongoose');
+var _ = require("underscore");
 
 module.exports = function(app) {
-    
+
     // Get Project by id
     app.get('/api/v1/project/:id', function(req, res) {
       var id = req.params.id;
@@ -11,8 +14,20 @@ module.exports = function(app) {
           return res.status(404).send(err);
         }
 
-        res.setHeader('Cache-Control', 'no-cache');
-        return res.json(project);
+        // Mongoose 3.* does not support deep population
+        // Workaround is to manual populate sub-document content by triggering sub-model
+        // ref: https://github.com/Automattic/mongoose/issues/1377#issuecomment-15911192
+        Contractor.populate(project, {
+          path: 'payables.contractor',
+          select: 'name'
+        }, function(populateErr, response) {
+
+          if (err) {
+            return res.status(400).send(err);
+          }
+          res.setHeader('Cache-Control', 'no-cache');
+          return res.json(project);
+        });
       });
     });
 
@@ -38,11 +53,10 @@ module.exports = function(app) {
         if (err) {
           return res.status(404).send(err);
         }
-        
+
         project.name = req.body.name;
         project.address = req.body.address;
         project.requiredInsuranceTypes = req.body.requiredInsuranceTypes;
-        project.payables = req.body.payables;
         project.isCCIP = req.body.isCCIP;
         project.updatedTime = Date.now();
         project.save(function(err) {
@@ -66,8 +80,19 @@ module.exports = function(app) {
           return res.status(404).send(err);
         }
 
-        res.setHeader('Cache-Control', 'no-cache');
-        return res.json(projects);
+        // comment ref: [GET] '/api/v1/project/:id'
+        Contractor.populate(projects, {
+          path: 'payables.contractor',
+          select: 'name'
+        }, function(populateErr, response) {
+
+          if (err) {
+            return res.status(400).send(err);
+          }
+
+          res.setHeader('Cache-Control', 'no-cache');
+          return res.json(projects);
+        });
       });
     });
 
@@ -90,24 +115,50 @@ module.exports = function(app) {
 
       var id = req.params.id;
       var payable = req.body;
+      payable.updatedTime = Date.now();
 
-      Project.findById(id, function(err, project) {
+      _createPayableIfNotExists(id, payable, function(err, projectId, savedPayable) {
         if (err) {
-          return res.status(404).send(err);
+          return res.status(400).send(err);
         }
-        if(payable._id){
-          project.payables.pull({_id: payable._id});
-        }
-        project.payables.push(payable);
-        project.save(function(err) {
-          if (err) {
-            return res.status(400).send(err);
+
+        // Then find project by id and add the newly created payable to the project
+        Project.findById(projectId, function(projectErr, project) {
+          if (projectErr) {
+            return res.status(400).send(projectErr);
           }
 
-          res.setHeader('Cache-Control', 'no-cache');
-          return res.json(project);
+          // If payable does not exist, pull will simply return 'this'
+          project.payables.pull({_id: savedPayable._id});
+          project.payables.push(savedPayable);
+
+          project.save(function(saveProjectErr, savedProject) {
+            if (saveProjectErr) {
+              return res.status(400).send(saveProjectErr);
+            }
+            res.setHeader('Cache-Control', 'no-cache');
+            return res.json(savedProject);
+          });
         });
       });
+
+      // Create payable if it does not exists,
+      // then trigger callback function to finish operations
+      function _createPayableIfNotExists(projectId, payable, callback) {
+        if (!payable._id) {
+          // First create ObjectId object and create a payable object in DB
+          Payable.create(payable, function(payableErr, savedPayable) {
+            if (payableErr) {
+              callback(payableErr, projectId, savedPayable);
+            }
+            else {
+              callback(null, projectId, savedPayable);
+            }
+          });
+        } else {
+          callback(null, projectId, payable)
+        }
+      };
     });
 
     //

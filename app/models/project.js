@@ -1,5 +1,7 @@
 var mongoose = require('mongoose');
-var PayableSchema = require('./payable');
+// Without '.schema', module imported is default to model,
+// resulting reference error when saving embedded documents
+var PayableSchema = require('./payable').schema;
 var Schema = mongoose.Schema;
 
 var ProjectSchema = new Schema({
