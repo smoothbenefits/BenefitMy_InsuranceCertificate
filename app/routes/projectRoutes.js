@@ -117,19 +117,17 @@ module.exports = function(app) {
       var payable = req.body;
       payable.updatedTime = Date.now();
 
-      _createPayableIfNotExists(id, payable, function(err, projectId, savedPayable) {
-        if (err) {
-          return res.status(400).send(err);
+      Payable.create(payable, function(payableErr, savedPayable) {
+        if (payableErr) {
+          return res.status(400).send(payableErr);
         }
 
         // Then find project by id and add the newly created payable to the project
-        Project.findById(projectId, function(projectErr, project) {
+        Project.findById(id, function(projectErr, project) {
           if (projectErr) {
             return res.status(400).send(projectErr);
           }
 
-          // If payable does not exist, pull will simply return 'this'
-          project.payables.pull({_id: savedPayable._id});
           project.payables.push(savedPayable);
 
           project.save(function(saveProjectErr, savedProject) {
@@ -141,24 +139,34 @@ module.exports = function(app) {
           });
         });
       });
+    });
 
-      // Create payable if it does not exists,
-      // then trigger callback function to finish operations
-      function _createPayableIfNotExists(projectId, payable, callback) {
-        if (!payable._id) {
-          // First create ObjectId object and create a payable object in DB
-          Payable.create(payable, function(payableErr, savedPayable) {
-            if (payableErr) {
-              callback(payableErr, projectId, savedPayable);
-            }
-            else {
-              callback(null, projectId, savedPayable);
-            }
-          });
-        } else {
-          callback(null, projectId, payable)
+    //
+    // Update a payable of a project, both defined by id
+    app.put('/api/v1/project/:projectId/payable/:payableId', function(req, res) {
+      var projectId = req.params.projectId;
+      var payableId = req.params.payableId;
+      var payable = req.body;
+
+      console.log(payable);
+
+      Project.findById(projectId, function(projectErr, project) {
+        if (projectErr) {
+          return res.status(400).send(projectErr);
         }
-      };
+
+        // If payable does not exist, pull will simply return 'this'
+        project.payables.pull({_id: payableId});
+        project.payables.push(payable);
+
+        project.save(function(saveProjectErr, savedProject) {
+          if (saveProjectErr) {
+            return res.status(400).send(saveProjectErr);
+          }
+          res.setHeader('Cache-Control', 'no-cache');
+          return res.json(savedProject);
+        });
+      });
     });
 
     //
