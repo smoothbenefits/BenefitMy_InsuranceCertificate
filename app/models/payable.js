@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var uploadModule = require('./upload');
 var Schema = mongoose.Schema;
 
 var PayableSchema = new Schema({
@@ -9,6 +10,7 @@ var PayableSchema = new Schema({
     ref: 'Contractor'
   },
   amount: { type: Number, required: true },
+  lienWaivers: [ uploadModule.UploadSchema ],
   createdTime: { type: Date, default: Date.now },
   updatedTime: { type: Date }
 });
