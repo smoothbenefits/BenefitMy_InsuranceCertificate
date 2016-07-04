@@ -56,7 +56,6 @@ module.exports = function(app) {
         project.name = req.body.name;
         project.address = req.body.address;
         project.requiredInsuranceTypes = req.body.requiredInsuranceTypes;
-        project.payables = req.body.payables;
         project.isCCIP = req.body.isCCIP;
         project.updatedTime = Date.now();
         project.save(function(err) {
@@ -147,8 +146,6 @@ module.exports = function(app) {
       var projectId = req.params.projectId;
       var payableId = req.params.payableId;
       var payable = req.body;
-
-      console.log(payable);
 
       Project.findById(projectId, function(projectErr, project) {
         if (projectErr) {
