@@ -3,7 +3,7 @@ module.exports = {
     emailConfig : {
         emailHost: 'smtp.sendgrid.net',
         emailHostUser: 'frank.qiu@gmail.com',
-        emailHostPassword: 'BenefitMy2015',
+        emailHostPassword: 'Shuibian2017',
         emailPort: 587,
         emailUseTls: true,
         appSupportEmailAddress: 'support@workbenefits.me'
